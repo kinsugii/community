@@ -15,17 +15,17 @@ public class AlphaService {
     private AlphaDao alphaDao;
 
     public AlphaService() {
-        System.out.println("实例化AlphaService");
+        //System.out.println("实例化AlphaService");
     }
 
     @PostConstruct
     public void init(){
-        System.out.println("初始化AlphaService");//在对象实例化之后调用
+        //System.out.println("初始化AlphaService");//在对象实例化之后调用
     }
 
     @PreDestroy
     public void destroy(){
-        System.out.println("销毁AlphaService");//在对象销毁之前调用
+        //System.out.println("销毁AlphaService");//在对象销毁之前调用
     }
 
     public String find(){
