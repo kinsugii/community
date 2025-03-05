@@ -1,7 +1,9 @@
 package com.nowcoder.community.service;
 
 import com.mysql.cj.util.StringUtils;
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
@@ -28,6 +30,9 @@ public class UserService implements CommunityConstant {
 
     @Autowired
     private TemplateEngine templateEngine;//注入模版引擎
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Value("${community.path.domain}")
     private String domain;
@@ -103,5 +108,48 @@ public class UserService implements CommunityConstant {
         } else {
             return ACTIVATION_FAILURE;
         }
+    }
+    //登陆功能，登陆后用户获得凭证，凭证若干秒后会过期
+    public Map<String, Object> login(String username, String password, int expiredSeconds) {
+        //得到的密码是明文，需要按照和注册时相同的加密规则加密后再和数据库中的数据进行对比
+        Map<String, Object> map = new HashMap<>();
+        //空值处理
+        if(StringUtils.isNullOrEmpty(username) || StringUtils.isNullOrEmpty(password)){
+            map.put("usernameMsg","账号不能为空");
+            return map;
+        }
+        if(StringUtils.isNullOrEmpty(password)){
+            map.put("passwordMsg","密码不能为空");
+            return map;
+        }
+        User user = userMapper.selectByUsername(username);
+        if(user == null){//账号不存在
+            map.put("usernameMsg","账号不存在");
+            return map;
+        }
+        if(user.getStatus() == 0){//虽然账号存在，但status=0表示未激活，未激活的账号是不能使用的
+            map.put("usernameMsg","账号还未激活");
+            return map;
+        }
+        password = CommunityUtil.md5(password + user.getSalt());//密码加密
+        if(!user.getPassword().equals(password)){
+            map.put("passwordMsg","密码错误");
+            return map;
+        }
+
+        //登陆成功，生成登陆凭证
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(CommunityUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+
+        map.put("ticket", loginTicket.getTicket());//获得登陆凭证
+        return map;
+    }
+    //退出登陆，根据凭证，将对应用户的登录凭证修改为失效状态
+    public void logout(String ticket) {
+        loginTicketMapper.updateStatus(ticket,1);
     }
 }
