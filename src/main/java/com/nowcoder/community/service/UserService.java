@@ -40,6 +40,8 @@ public class UserService implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+
+
     //根据id查询用户
     public User findUserById(int id) {
         return userMapper.selectById(id);
@@ -152,4 +154,18 @@ public class UserService implements CommunityConstant {
     public void logout(String ticket) {
         loginTicketMapper.updateStatus(ticket,1);
     }
+
+    public LoginTicket findLoginTicket(String ticket) {
+        return loginTicketMapper.selectByTicket(ticket);
+    }
+
+    public int updateHeader(int userId, String headerUrl) {
+        return userMapper.updateHeader(userId, headerUrl);
+    }
+
+    //更改密码
+    public int updatePassword(int userId, String password) {
+        return userMapper.updatePassword(userId,password);
+    }
+
 }
