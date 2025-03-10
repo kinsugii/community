@@ -29,7 +29,7 @@ public class HomeController {
     public String getIndexPage(Model model, Page page) {
         // 方法调用钱,SpringMVC会自动实例化Model和Page,并将Page注入Model.
         // 所以,在thymeleaf中可以直接访问Page对象中的数据.
-        page.setRows(discussPostService.findDiscussPostRows(0));//一共有多少行帖子
+        page.setRows(discussPostService.findDiscussPostRows(0));//一共有多少行帖子 userid=0表示首页查看所有的帖子
         page.setPath("/index");//设置当前访问路径
 
         List<DiscussPost> list = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit());

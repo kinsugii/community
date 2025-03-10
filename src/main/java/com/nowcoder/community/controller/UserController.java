@@ -1,5 +1,6 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityUtil;
@@ -43,11 +44,13 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
         return "/site/setting";
     }//前端调用/user/setting跳转到账号设置页面
 
+    @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImage, Model model) {//页面提交一个文件 model模版用来得到数据，向前端返回数据
         if (headerImage == null) {
@@ -113,6 +116,7 @@ public class UserController {
         }
     }
 
+    @LoginRequired
     @RequestMapping(path = "/uploadPassword", method = RequestMethod.POST)
     public String uploadPassword(String oldPassword, String newPassword, String confirmPassword,Model model) {
         User user = hostHolder.getUser();
@@ -127,18 +131,18 @@ public class UserController {
             model.addAttribute("newPasswordMsg", "新密码不能为空");
             return "/site/setting";
         }
-        System.out.println(newPassword);
-        System.out.println(confirmPassword);
+//        System.out.println(newPassword);
+//        System.out.println(confirmPassword);
         if(StringUtils.isBlank(confirmPassword) || !confirmPassword.equals(newPassword)){
             model.addAttribute("confirmPasswordMsg", "两次输入的密码不一致");
             return "/site/setting";
         }
-        System.out.println(newPassword);
-        System.out.println(confirmPassword);
+//        System.out.println(newPassword);
+//        System.out.println(confirmPassword);
         //更新当前用户的密码
         newPassword = CommunityUtil.md5(newPassword+user.getSalt());
         userService.updatePassword(user.getId(), newPassword);
-        return "redirect:/index";
+        return "redirect:/logout";
 
     }
 

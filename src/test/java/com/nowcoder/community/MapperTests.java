@@ -5,6 +5,7 @@ import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.MailClient;
+import com.nowcoder.community.util.SensitiveFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,6 +91,19 @@ public class MapperTests {
         String content = templateEngine.process("mail/demo", context);
         System.out.println(content);
         mailClient.sendMail("1657221077@qq.com","Html","hello");
+    }
+
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
+
+    @Test
+    public void testSensitiveFilter() {
+        String text = "这里可以赌博，可以嫖娼";
+        System.out.println(text);
+        System.out.println(sensitiveFilter.filter(text));
+        text = "你#嫖娼%^赌#博";
+        System.out.println(sensitiveFilter.filter(text));
+
     }
 }
 

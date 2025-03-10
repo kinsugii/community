@@ -12,7 +12,7 @@ public class CookieUtil {
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            System.out.println(cookies.length);
+//            System.out.println(cookies.length);
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(name)) {
                     return cookie.getValue();

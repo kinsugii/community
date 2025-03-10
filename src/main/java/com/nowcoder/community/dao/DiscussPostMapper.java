@@ -18,4 +18,9 @@ public interface DiscussPostMapper {
     // 查询时如果只有一个参数,并且在<if>里使用,则必须加别名.
     int selectDiscussPostRows(@Param("userId") int userId);
 
+    //返回增加的行数int
+    int insertDiscussPost(DiscussPost discussPost);
+
+    DiscussPost selectDiscussPostById(@Param("id") int id);
+
 }
