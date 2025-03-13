@@ -38,13 +38,13 @@ public class CommentService implements CommunityConstant {
         if (comment == null) {
             throw new IllegalArgumentException("参数不能为空!");
         }
-
-        // 添加评论
+        //添加事务管理 让添加评论和更新帖子这两个行为要么同时成功要么同时失败
+        // 添加评论 对添加的评论内容进行标签过滤以及敏感词过滤
         comment.setContent(HtmlUtils.htmlEscape(comment.getContent()));
         comment.setContent(sensitiveFilter.filter(comment.getContent()));
         int rows = commentMapper.insertComment(comment);
 
-        // 更新帖子评论数量
+        // 更新帖子评论数量 （是一条对帖子的评论则更改帖子的评论数量 如果是对评论的回复则无须更改）
         if (comment.getEntityType() == ENTITY_TYPE_POST) {
             int count = commentMapper.selectCountByEntity(comment.getEntityType(), comment.getEntityId());
             discussPostService.updateCommentCount(comment.getEntityId(), count);
